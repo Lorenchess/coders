@@ -1,7 +1,9 @@
 package edu.coders.advice;
 
+import edu.coders.exceptions.FileProcessingException;
 import edu.coders.exceptions.LessonFileNotFoundException;
 import edu.coders.exceptions.LessonNotFoundException;
+import edu.coders.exceptions.TitleExtractionException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -24,8 +26,14 @@ public class GlobalExceptionHandler {
     }
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    @ExceptionHandler(LessonFileNotFoundException.class)
-    public Map<String,String> handleLessonFileNotFoundException(LessonFileNotFoundException exception){
+    @ExceptionHandler(FileProcessingException.class)
+    public Map<String,String> handleFileProcessingException(FileProcessingException exception){
+        return errorMapHandler(exception);
+    }
+
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ExceptionHandler(TitleExtractionException.class)
+    public Map<String,String> handleTitleExtractionException(TitleExtractionException exception){
         return errorMapHandler(exception);
     }
 }
