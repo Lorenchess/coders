@@ -1,24 +1,18 @@
-package edu.coders.entities;
+package edu.coders.dtos;
 
-import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.List;
 
-@Entity
 @Builder
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Lab {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class LabDTO {
     private Long id;
-
     private String title;
-
     private String description;
-
-    private String filePath;
+    private String starterCode;
+    private List<TestCaseDTO> testCases;
 }

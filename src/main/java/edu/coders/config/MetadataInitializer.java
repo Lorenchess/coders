@@ -4,6 +4,7 @@ import edu.coders.entities.Lesson;
 import edu.coders.entities.Quiz;
 import edu.coders.repositories.LessonRepository;
 import edu.coders.repositories.QuizRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Configuration;
@@ -13,11 +14,11 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Stream;
+
 
 @Configuration
 @RequiredArgsConstructor
@@ -26,21 +27,43 @@ public class MetadataInitializer implements CommandLineRunner {
     private final LessonRepository lessonRepository;
     private final QuizRepository quizRepository;
 
-
+    
+    /**
+     * Initializes metadata for quizzes and lessons by scanning directories,
+     * creating corresponding entities, and saving them in their respective repositories.
+     *
+     * <p>For quizzes, it scans files in the "quizzes" directory, extracts the title from each file,
+     * and creates a new {@link Quiz} object with the file path and title. For lessons, it scans the
+     * "lessons" directory, extracts the title, associates the lesson with its corresponding quiz
+     * (if available), and creates a {@link Lesson} object. Finally, it persists these entities into
+     * the database using {@link LessonRepository} and {@link QuizRepository}.</p>
+     *
+     * @param args Command line arguments (not used in this implementation).
+     * @throws Exception If an error occurs during file scanning or database persistence.
+     *                   Specific errors include {@link java.io.FileNotFoundException}
+     *                   or {@link java.io.IOException}.
+     */
     @Override
+    @Transactional
     public void run(String... args) throws Exception {
-
-        List<Lesson> lessons = scanFiles("lessons", path -> Lesson.builder()
-                .title(extractTitle(path, ".md"))
-                .filePath(path.toString())
-                .build());
-        lessonRepository.saveAll(lessons);
-
+    
         List<Quiz> quizzes = scanFiles("quizzes", path -> Quiz.builder()
                 .title(extractTitle(path, ".json"))
                 .filePath(path.toString())
                 .build());
         quizRepository.saveAll(quizzes);
+    
+        List<Lesson> lessons = scanFiles("lessons", path -> {
+            String title = extractTitle(path, ".md");
+            Quiz currentQuiz = quizRepository.findByTitle(title).orElse(null);
+            return Lesson.builder()
+                    .title(title)
+                    .filePath(path.toString())
+                    .quiz(currentQuiz)
+                    .build();
+        });
+        lessonRepository.saveAll(lessons);
+    
     }
 
     /**
