@@ -5,12 +5,11 @@ import edu.coders.entities.Lesson;
 import edu.coders.exceptions.LessonFileNotFoundException;
 import edu.coders.exceptions.LessonNotFoundException;
 import edu.coders.repositories.LessonRepository;
+import edu.coders.utils.FileUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.List;
 
 @Service
@@ -24,7 +23,7 @@ public class LessonServiceImpl implements LessonService {
         Lesson lesson = lessonRepository.findById(id)
                 .orElseThrow(() -> new LessonNotFoundException(String.format("Lesson %s not found", id)));
 
-        String lessonContentFromFile = getLessonContentFromFile(lesson.getFilePath());
+        String lessonContentFromFile = FileUtils.loadContentFromFile(lesson.getFilePath(), LessonFileNotFoundException::new);
 
         return LessonDTO.builder()
                 .id(lesson.getId())
@@ -46,7 +45,7 @@ public class LessonServiceImpl implements LessonService {
         if (lesson == null) {
             throw new LessonNotFoundException(String.format("Lesson with title '%s' not found", title));
         }
-        String lessonContentFromFile = getLessonContentFromFile(lesson.getFilePath());
+        String lessonContentFromFile = FileUtils.loadContentFromFile(lesson.getFilePath(), LessonFileNotFoundException::new);
 
         return LessonDTO.builder()
                 .id(lesson.getId())
@@ -56,12 +55,4 @@ public class LessonServiceImpl implements LessonService {
                 .build();
     }
 
-
-    private String getLessonContentFromFile(String filePath) throws LessonFileNotFoundException {
-        try {
-            return Files.readString(Paths.get(filePath));
-        } catch (Exception e) {
-            throw new LessonFileNotFoundException(String.format("File not found with path %s", filePath));
-        }
-    }
 }
