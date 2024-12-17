@@ -4,7 +4,6 @@ import edu.coders.dtos.LessonDTO;
 import edu.coders.exceptions.LessonFileNotFoundException;
 import edu.coders.exceptions.LessonNotFoundException;
 import edu.coders.services.LessonService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,8 +11,12 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/lessons")
-@RequiredArgsConstructor
+
 public class LessonController {
+
+    public LessonController(LessonService lessonService) {
+        this.lessonService = lessonService;
+    }
 
     private final LessonService lessonService;
 
@@ -32,7 +35,7 @@ public class LessonController {
     }
 
     @GetMapping("/search/{title}")
-    public ResponseEntity<LessonDTO> getLessonByTitle(@PathVariable String title) throws LessonFileNotFoundException {
+    public ResponseEntity<LessonDTO> getLessonByTitle(@PathVariable String title) throws LessonFileNotFoundException, LessonNotFoundException {
         LessonDTO lesson = lessonService.getLessonByTitle(title);
         return ResponseEntity.ok(lesson);
     }

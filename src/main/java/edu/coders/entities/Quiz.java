@@ -1,9 +1,8 @@
 package edu.coders.entities;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
-
-import java.util.List;
 
 
 @Entity
@@ -17,14 +16,17 @@ public class Quiz {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Question> questions;
+    @NotNull
+    private String title;
+
+    @NotNull
+    private String filePath;
 
     @PrePersist
     @PreUpdate
     private void validateQuiz() {
-        if (questions == null || questions.isEmpty()) {
-            throw new IllegalStateException("Quiz must have at least one question.");
+        if (filePath == null || filePath.isEmpty()) {
+            throw new IllegalStateException(String.format("Quiz must have a file path. File path not found: %s", filePath));
         }
     }
 }
