@@ -11,6 +11,8 @@ import lombok.*;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
+@EqualsAndHashCode
 public class Quiz {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

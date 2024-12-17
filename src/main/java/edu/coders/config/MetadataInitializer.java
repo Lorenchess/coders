@@ -117,7 +117,7 @@ public class MetadataInitializer implements CommandLineRunner {
      * @return A list of objects of type {@code T} that were created by processing the resources in the specified directory.
      * @throws FileProcessingException if an {@link IOException} occurs while processing the directory or resources.
      */
-    private <T> List<T> scanFiles(String directoryPath, Function<Path, T> pathMapper, Function<InputStream, T> streamMapper) {
+     <T>List<T> scanFiles(String directoryPath, Function<Path, T> pathMapper, Function<InputStream, T> streamMapper) {
         List<T> results = new ArrayList<>();
         try {
             Resource[] resources = resourceResolver.getResources(directoryPath + "/*");

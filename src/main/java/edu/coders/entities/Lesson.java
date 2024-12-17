@@ -10,6 +10,8 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@ToString
+@EqualsAndHashCode
 @Table(name = "lesson", indexes = @Index(name = "idx_lesson_title", columnList = "title"))
 public class Lesson {
 
