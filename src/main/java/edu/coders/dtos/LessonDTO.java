@@ -1,14 +1,14 @@
 package edu.coders.dtos;
 
-import edu.coders.entities.Quiz;
 import lombok.*;
+import org.springframework.hateoas.RepresentationModel;
 
 @Builder
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class LessonDTO {
+public class LessonDTO extends RepresentationModel<LessonDTO> {
     private Long id;
 
     private String title;
@@ -17,6 +17,6 @@ public class LessonDTO {
 
     private String content;
 
-    private Quiz quiz;
+    private QuizDTO quiz;
 
 }

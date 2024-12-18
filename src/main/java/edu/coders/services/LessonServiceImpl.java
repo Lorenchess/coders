@@ -1,7 +1,9 @@
 package edu.coders.services;
 
 import edu.coders.dtos.LessonDTO;
+import edu.coders.dtos.QuizDTO;
 import edu.coders.entities.Lesson;
+import edu.coders.entities.Quiz;
 import edu.coders.exceptions.LessonFileNotFoundException;
 import edu.coders.exceptions.LessonNotFoundException;
 import edu.coders.repositories.LessonRepository;
@@ -10,6 +12,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 @Service
@@ -23,14 +28,7 @@ public class LessonServiceImpl implements LessonService {
         Lesson lesson = lessonRepository.findById(id)
                 .orElseThrow(() -> new LessonNotFoundException(String.format("Lesson %s not found", id)));
 
-        String lessonContentFromFile = FileUtils.loadContentFromFile(lesson.getFilePath(), LessonFileNotFoundException::new);
-
-        return LessonDTO.builder()
-                .id(lesson.getId())
-                .title(lesson.getTitle())
-                .content(lessonContentFromFile)
-                .quiz(lesson.getQuiz())
-                .build();
+        return buildLessonDTOFromLesson(lesson);
     }
 
     @Override
@@ -45,13 +43,29 @@ public class LessonServiceImpl implements LessonService {
         if (lesson == null) {
             throw new LessonNotFoundException(String.format("Lesson with title '%s' not found", title));
         }
+        return buildLessonDTOFromLesson(lesson);
+
+    }
+
+    private LessonDTO buildLessonDTOFromLesson(Lesson lesson) throws LessonFileNotFoundException {
         String lessonContentFromFile = FileUtils.loadContentFromFile(lesson.getFilePath(), LessonFileNotFoundException::new);
+
+        Quiz quiz = lesson.getQuiz();
+
+        QuizDTO quizDTO = null;
+
+        if (quiz != null) {
+            String normalizedPath = quiz.getFilePath().replace("\\", "/").split(":", 2)[1].trim();
+            Path quizFilePath = Path.of(normalizedPath);
+            quizDTO = FileUtils.parseQuizFromFile(quizFilePath);
+            quizDTO.setId(quiz.getId());
+        }
 
         return LessonDTO.builder()
                 .id(lesson.getId())
                 .title(lesson.getTitle())
                 .content(lessonContentFromFile)
-                .quiz(lesson.getQuiz())
+                .quiz(quizDTO)
                 .build();
     }
 

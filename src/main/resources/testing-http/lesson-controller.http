@@ -1,0 +1,15 @@
+### Get Lesson by ID
+GET http://localhost:9090/lessons/1
+Accept: application/json
+
+###
+
+### Search Lessons by Keyword
+GET http://localhost:9090/lessons/search?keyword=java
+Accept: application/json
+
+###
+
+### Get Lesson by Title
+GET http://localhost:9090/lessons/search/Introduction%20to%20Java
+Accept: application/json

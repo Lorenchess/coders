@@ -1,7 +1,6 @@
 package edu.coders.dtos;
 
-import jakarta.persistence.Embeddable;
-import jakarta.validation.constraints.NotNull;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
 @Builder
@@ -13,6 +12,7 @@ public class AnswerDTO {
 
    private String text;
 
+   @JsonProperty("isCorrect")
    private boolean isCorrect;
 
    private String explanation;
